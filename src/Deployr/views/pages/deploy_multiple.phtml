@@ -1,0 +1,31 @@
+<h2><?php echo $this->__('Files publication SOURCE > DESTINATION') ?></h2>
+
+<p>
+    <a href="<?php echo $this->link('index') ?>"><?php echo $this->__('Back to the list') ?></a>
+</p>
+
+<?php
+if($this->success) {
+	?>
+	<div class="alert alert-success">
+        <?php echo $this->__('Files successfully published'); ?>
+    </div>
+	<?php
+}
+else {
+	?>
+	<div class="alert alert-danger">
+        <?php echo $this->__('An error occurred while copying'); ?>
+    </div>
+	<?php
+}
+?>
+
+<h4>STDIN</h4>
+<pre><?php echo $this->rsync_cmd ?></pre>
+<h4>STDOUT :</h4>
+<pre><?php echo $this->output ?></pre>
+
+<p>
+    <a href="<?php echo $this->link('index') ?>"><?php echo $this->__('Back to the list') ?></a>
+</p>

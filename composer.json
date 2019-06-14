@@ -1,0 +1,12 @@
+{
+  "name": "rseon/deployr",
+  "description": "Simply copy files from source to destination.",
+  "autoload": {
+    "psr-4": {
+      "Deployr\\": "src/Deployr/"
+    },
+    "classmap": [
+      "src/"
+    ]
+  }
+}

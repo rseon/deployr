@@ -1,0 +1,62 @@
+<h1>Deployr! v<?php echo $this->version ?></h1>
+
+<?php
+if($this->error) {
+    ?>
+    <div class="alert alert-danger">
+        <?php echo $this->error ?>
+    </div>
+    <?php
+}
+else {
+    ?>
+    <h2><?php echo $this->__('Modified files') ?></h2>
+
+    <div class="alert alert-warning">
+        <?php echo $this->__('This interface makes it possible to publish the modified files in dev on the prod.') ?>.<br />
+        <strong><?php echo $this->__('Use with caution') ?></strong> : <?php echo $this->__('there is no backup created or possibility to go back.') ?>
+    </div>
+
+    <div class="alert alert-info">
+        <?php echo $this->__('Check the files below to review them') ?>
+    </div>
+    
+    <form action="<?php echo $this->link('diff') ?>" method="post" id="bulkdeploy">
+        <ul>
+            <?php
+            foreach($this->files as $file) {
+                ?>
+            
+                <li>
+                    <label>
+                        <input type="checkbox" class="bulk" name="files[]" value="<?php echo $file['filename'] ?>" data-hash="<?php echo $file['hash'] ?>" />
+                        <?php echo $file['filename'] ?>
+                    </label>
+                    <a href="<?php echo $this->link('diff', ['file' => $file['filename'], 'hash' => $file['hash']]) ?>" class="badge badge-success"><?php echo $this->__('SHOW DIFF') ?></a>
+                    <?php
+                    if(!file_exists($this->dest_path.'/'.$file['filename'])) {
+                        ?>
+                        <span class="badge badge-primary"><?php echo $this->__('NEW !') ?></span>
+                        <?php
+                    }
+                    ?>
+                </li>
+                <?php
+            }
+            ?>
+        </ul>
+        <div id="bulklist" style="display:none">
+            <hr />
+            <h3><?php echo $this->__('Mass verification') ?></h3>
+
+            <p><?php echo $this->__('Files to display') ?> :</p>
+            <ul></ul>
+
+            <button type="submit" class="btn btn-success"><?php echo $this->__('Show the differences') ?></button>
+        </div>
+    </form>
+    <?php
+}
+?>
+
+

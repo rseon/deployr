@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Deployr!</title>
+    <link rel="stylesheet" href="<?php echo $this->path('/assets/bootstrap.min.css') ?>">
+    <script src="<?php echo $this->path('/assets/jquery-3.4.1.min.js') ?>"></script>
+    <script src="<?php echo $this->path('/assets/bootstrap.min.js') ?>"></script>
+    <style type="text/css">
+        table {
+            width: 100%;
+        }
+        .diff td{
+            padding:0 0.667em;
+            vertical-align:top;
+            white-space:pre-wrap;
+            font-family:Consolas,'Courier New',Courier,monospace;
+            font-size:0.75em;
+            line-height:1.333;
+        }
+
+        .diff span{
+            display:block;
+            min-height:1.333em;
+            margin-top:-1px;
+            padding:0 3px;
+        }
+
+        * html .diff span{
+            height:1.333em;
+        }
+
+        .diff span:first-child{
+            margin-top:0;
+        }
+
+        .diffDeleted span{
+            border:1px solid rgb(255,192,192);
+            background:rgb(255,224,224);
+        }
+
+        .diffInserted span{
+            border:1px solid rgb(192,255,192);
+            background:rgb(224,255,224);
+        }
+    </style>
+</head>
+<body class="d-flex flex-column h-100">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-3">
+    <div class="container">
+        <a class="navbar-brand" href="<?php echo $this->link() ?>">Deployr!</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+                <a class="nav-item nav-link<?php echo $this->route() == '' ? ' active' : '' ?>" href="<?php echo $this->link() ?>"><?php echo $this->__('Home') ?></a>
+                <a class="nav-item nav-link<?php echo $this->route() == 'settings' ? ' active' : '' ?>" href="<?php echo $this->link('settings') ?>"><?php echo $this->__('Settings') ?></a>
+                <a class="nav-item nav-link<?php echo $this->route() == 'logs' ? ' active' : '' ?>" href="<?php echo $this->link('logs') ?>"><?php echo $this->__('Show logs') ?></a>
+            </div>
+        </div>
+    </div>
+</nav>
+<main class="flex-shrink-0">
+    <div class="container mb-5">
+        <?php
+        if($this->flash) {
+            ?>
+            <div class="alert alert-primary alert-dismissible fade show">
+                <?php echo $this->flash ?>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <?php
+        }
+
+        echo $this->getContent();
+
+        ?>
+    </div>
+</main>
+<footer class="bg-light mt-auto py-3">
+    <div class="container">
+        <span class="text-muted">Made with ❤ by <a href="https://github.com/rseon" target="_blank">@rseon</a> - <a href="https://github.com/rseon/deployr" target="_blank">Sources</a></span>
+    </div>
+</footer>
+
+<script>
+    $(function() {
+        if($('#bulklist').length) {
+            var bulkfiles = [], hashes = [];
+            $('input.bulk').on('change', function() {
+                bulkfiles = [];
+                hashes = [];
+
+                $('input.bulk').each(function() {
+                    if($(this).is(':checked')) {
+                        bulkfiles.push($(this).val());
+                        hashes.push($(this).data('hash'));
+                    }
+                });
+
+                updateBulkList();
+            });
+
+            var $bulkList = $('#bulklist').find('ul');
+            var updateBulkList = function() {
+                $bulkList.empty();
+                for(var i in bulkfiles) {
+                    var content = bulkfiles[i] + ' <input type="hidden" name="hashes[]" value="'+hashes[i]+'">';
+                    $bulkList.append($('<li/>').html(content));
+                }
+
+                if(bulkfiles.length) {
+                    $('#bulklist').show();
+                    $('#bulklist-help').hide();
+                }
+                else {
+                    $('#bulklist').hide();
+                    $('#bulklist-help').show();
+                }
+            };
+        }
+    });
+</script>
+</body>
+</html>

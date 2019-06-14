@@ -1,0 +1,36 @@
+<h1><?php echo $this->__('Settings') ?></h1>
+<form action="<?php echo $this->link('settings') ?>" method="post">
+
+    <div class="form-group">
+        <label for="lang"><?php echo $this->__('Choose language') ?></label>
+        <select name="lang" id="lang" class="form-control">
+            <?php
+            foreach($this->available_langs as $code => $lang) {
+                ?>
+                <option value="<?php echo $code ?>"<?php echo isset($this->settings['lang']) && $this->settings['lang'] == $code ? ' selected' : '' ?>><?php echo $lang ?></option>
+                <?php
+            }
+            ?>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="src_path"><?php echo $this->__('Source path') ?> *</label>
+        <input type="text" name="src_path" id="src_path" value="<?php echo $this->settings['src_path'] ?? '' ?>" class="form-control" placeholder="/var/www/src" required />
+        <small class="form-text text-muted"><?php echo $this->__('Must be on this server') ?></small>
+    </div>
+
+    <div class="form-group">
+        <label for="dest_path"><?php echo $this->__('Destination path') ?> *</label>
+        <input type="text" name="dest_path" id="dest_path" value="<?php echo $this->settings['dest_path'] ?? '' ?>" class="form-control" placeholder="/var/www/dest" required />
+        <small class="form-text text-muted"><?php echo $this->__('Must be on this server') ?></small>
+    </div>
+
+    <div class="form-group">
+        <label for="excludes"><?php echo $this->__('Exclude these files') ?></label>
+        <textarea name="excludes" id="excludes" class="form-control"><?php echo $this->settings['excludes'] ?? '' ?></textarea>
+        <small class="form-text text-muted"><?php echo $this->__('One file by line') ?></small>
+    </div>
+
+    <button type="submit" class="btn btn-primary"><?php echo $this->__('Submit') ?></button>
+</form>

@@ -1,0 +1,4 @@
+.idea
+/vendor/
+*.db
+example/_secure23x45/assets

@@ -1,0 +1,46 @@
+<h1><?php echo $this->__('Logs') ?></h1>
+<table class="table">
+    <thead>
+    <tr>
+        <th width="1"><?php echo $this->__('Date') ?></th>
+        <th><?php echo $this->__('Author') ?></th>
+        <th><?php echo $this->__('Message') ?></th>
+        <th width="1"><?php echo $this->__('Status') ?></th>
+        <th width="1">&nbsp;</th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+    foreach($this->logs as $log) {
+        ?>
+        <tr>
+            <td><span class="badge"><?php echo $log['date'] ?></span></td>
+            <td><?php echo $log['author'] ?></td>
+            <td>
+                <?php
+                echo $log['message'];
+                if($log['files']) {
+                    $files = explode(',', $log['files']);
+                    ?>
+                    <br />
+                    <small>
+                        <a href="javascript:;" onclick="$('#files-<?php echo $log['id'] ?>').toggle()"><?php echo $this->__('Show files') ?></a>
+                        <pre id="files-<?php echo $log['id'] ?>" style="display: none"><?php echo implode(PHP_EOL, explode(',', $log['files'])) ?></pre>
+                    </small>
+                    <?php
+                }
+                ?>
+            </td>
+            <td class="text-center"><?php echo $log['status'] == 1 ? '✔' : ($log['status'] == 0 ? '❌' : '') ?></td>
+            <td>
+                <a href="<?php echo $this->link('logs', ['delete' => $log['id']]) ?>"
+                   onclick="return confirm('<?php echo $this->__('Are you sure ?') ?>')"
+                   class="btn btn-sm btn-outline-danger"
+                ><?php echo $this->__('Delete') ?></a>
+            </td>
+        </tr>
+        <?php
+    }
+    ?>
+    </tbody>
+</table>

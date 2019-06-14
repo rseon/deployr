@@ -1,0 +1,56 @@
+<h2><?php echo $this->__('File changes SOURCE > DESTINATION') ?></h2>
+<h3><?php echo $this->filename ?></h3>
+
+<p>
+    <a href="<?php echo $this->link('index') ?>"><?php echo $this->__('Back to the list') ?></a>
+</p>
+
+<?php
+if($this->error) {
+    ?>
+    <div class="alert alert-danger">
+        <?php echo $this->error ?>
+    </div>
+    <?php
+}
+else {
+
+	if(!$this->exists) {
+		?>
+		<div class="alert alert-info">
+            <?php echo $this->__('The file does not exist in the destination directory, it will be created') ?>
+        </div>
+        <pre><?php echo $this->content ?></pre>
+        <?php
+	}
+	else {
+		?>
+		<div class="alert alert-warning">
+            <?php echo $this->__('Overview of differences between destination / source files (old / new). If in doubt, check the files by hand.') ?>
+        </div>
+		<?php
+
+		echo $this->content;
+	}
+	?>
+    <hr />
+    <h3><?php echo $this->__('Publish file') ?></h3>
+	<form action="<?php echo $this->link('deploy') ?>" method="post">
+        <input type="hidden" name="file" value="<?php echo $this->filename ?>" />
+        <input type="hidden" name="hash" value="<?php echo $this->hash ?>" />
+
+        <p>
+            <label><?php echo $this->__('Your name') ?> : <span class="text-danger">*</span></label>
+            <input type="text" name="commit_author" class="form-control" required />
+        </p>
+        <p>
+            <label><?php echo $this->__('Add a commit message') ?> :</label>
+            <input type="text" name="commit_message" class="form-control" />
+        </p>
+        <button type="submit" class="btn btn-block btn-success"><?php echo $this->__('I validate: publish this file') ?></button>
+    </form>
+    <p>
+        <a href="<?php echo $this->link('index') ?>"><?php echo $this->__('Back to the list') ?></a>
+    </p>
+	<?php
+}

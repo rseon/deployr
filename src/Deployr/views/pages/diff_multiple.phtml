@@ -1,0 +1,90 @@
+<h2><?php echo $this->__('Files changes SOURCE > DESTINATION') ?></h2>
+
+<p>
+    <a href="<?php echo $this->link('index') ?>"><?php echo $this->__('Back to the list') ?></a>
+</p>
+
+<?php
+if($this->error) {
+    ?>
+    <div class="alert alert-danger">
+        <?php echo $this->error ?>
+    </div>
+    <?php
+}
+else {
+    ?>
+    <div class="alert alert-info">
+        <?php echo $this->__('Check the differences between the files and check the ones you want to publish') ?>.<br />
+        <strong><?php echo $this->__('Use with caution') ?></strong> : <?php echo $this->__('there is no backup created or possibility to go back.') ?>
+    </div>
+    <form action="<?php echo $this->link('deploy') ?>" method="post">
+        <div class="accordion mb-3" id="filesReview">
+            <?php
+            foreach($this->files as $i => $file) {
+                ?>
+                <div class="card">
+                    <div class="card-header py-0">
+                        <h2>
+                            <label class="my-0">
+                                <input type="checkbox" class="bulk" name="files[]" value="<?php echo $file['filename'] ?>" data-hash="<?php echo $file['hash'] ?>" />
+                            </label>
+                            <a href="#" class="btn btn-link collapsed py-0" data-toggle="collapse" data-target="#file-<?php echo $i ?>">
+                                <?php echo $file['filename'] ?>
+                            </a>
+                        </h2>
+                    </div>
+                    <div id="file-<?php echo $i ?>" class="collapse" data-parent="#filesReview">
+                        <div class="card-body">
+                            <?php
+                            if(!$file['exists']) {
+                                ?>
+                                <div class="alert alert-info">
+                                    <?php echo $this->__('The file does not exist in the destination directory, it will be created') ?>
+                                </div>
+                                <pre><?php echo $file['content'] ?></pre>
+                                <?php
+                            }
+                            else {
+                                ?>
+                                <div class="alert alert-warning">
+                                    <?php echo $this->__('Overview of differences between destination / source files (old / new). If in doubt, check the files by hand.') ?>
+                                </div>
+                                <?php
+                                echo $file['content'];
+                            }
+                            ?>
+                        </div>
+                    </div>
+                </div>
+                <?php
+            }
+            ?>
+        </div>
+        <div id="bulklist-help" class="alert alert-info">
+            <?php echo $this->__('Check files above to publish them') ?>
+        </div>
+        <div id="bulklist" style="display:none">
+            <hr />
+            <h3><?php echo $this->__('Mass publication') ?></h3>
+
+            <p><?php echo $this->__('Files to publish') ?> :</p>
+            <ul></ul>
+
+            <p>
+                <label><?php echo $this->__('Your name') ?> : <span class="text-danger">*</span></label>
+                <input type="text" name="commit_author" class="form-control" required />
+            </p>
+            <p>
+                <label><?php echo $this->__('Add a commit message') ?> :</label>
+                <input type="text" name="commit_message" class="form-control" />
+            </p>
+
+            <button type="submit" class="btn btn-success btn-block"><?php echo $this->__('I validate: publish these files') ?></button>
+        </div>
+    </form>
+    <p>
+        <a href="<?php echo $this->link('index') ?>"><?php echo $this->__('Back to the list') ?></a>
+    </p>
+    <?php
+}
