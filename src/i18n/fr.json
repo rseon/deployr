@@ -12,7 +12,7 @@
   "Delete" : "Supprimer",
   "Destination path" : "Répertoire de destination",
   "Don't use this script in production !": "N'utilisez pas ce script en production !",
-  "Exclude these files" : "Exclure ces fichiers",
+  "Exclude these files and pathes" : "Exclure ces fichiers et répertoires",
   "File changes SOURCE > DESTINATION" : "Modifications du fichier SOURCE > DESTINATION",
   "Files changes SOURCE > DESTINATION" : "Modifications des fichiers SOURCE > DESTINATION",
   "File :file not to publish. Abort." : "Fichier :file à ne pas publier. Abandon.",

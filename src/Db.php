@@ -303,10 +303,9 @@ class Db
                 [
                     'key' => 'excludes',
                     'value' => implode(',', [
-                        '.git',
-                        '*.db',
-                        pathinfo($_SERVER['SCRIPT_FILENAME'], PATHINFO_DIRNAME),
-                        'vendor',
+                        str_replace(str_replace('\\', '/', dirname(__DIR__)), '', pathinfo($_SERVER['SCRIPT_FILENAME'], PATHINFO_DIRNAME)),
+                        '/node_modules/',
+                        '/vendor/',
                     ]),
                 ],
             ]);

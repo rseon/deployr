@@ -30,6 +30,19 @@ $deployr->run();
 
 At first run, the database will be created and assets copied into new folder.
 
+You will be asked to set the settings. Be careful with folder path and excluded files. By default, the following paths are excluded :
+
+- The path of this tool (for example `/_secure23x45`)
+- `/node_modules/` and `/vendor/` (because of large amount of files.)
+
+
+### Notice
+__Don't use this tool for first deployment !__
+
+If you add folders or files in excluded paths, like storage path, it will not be created even thought it is necessary.
+
+
+
 
 ## Methods
 
