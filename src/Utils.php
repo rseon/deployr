@@ -3,7 +3,7 @@
 namespace Deployr;
 
 trait Utils {
-	
+
 
     /**
      * Get link to a page
@@ -14,7 +14,6 @@ trait Utils {
      */
     public function link(?string $page = '', array $params = []): string
     {
-
         $param_key = $this->app->getOption('access_key_name');
 
         $query = [
@@ -103,7 +102,9 @@ trait Utils {
     {
         $excludes = $this->db->getSetting('excludes');
         if($excludes) {
-            return explode(',', $excludes);
+            return array_map(function($v) {
+                return str_replace([PHP_EOL, "\r", "\n"], '', $v);
+            }, explode(',', $excludes));
         }
         return [];
     }
