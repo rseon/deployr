@@ -6,7 +6,7 @@ class Tools
 {
 
     /**
-     * Prevent XSS
+     * Clean a string
      *
      * @param string $string
      * @return string
@@ -82,4 +82,5 @@ class Tools
         $dir->close();
         return true;
     }
+
 }

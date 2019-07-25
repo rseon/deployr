@@ -7,6 +7,7 @@ class LogsController extends AbstractController
 
     /**
      * @return mixed|void
+     * @throws \Deployr\Exception\DbException
      */
     public function init()
     {
@@ -14,18 +15,21 @@ class LogsController extends AbstractController
             $this->deleteLog((int) $_GET['delete']);
         }
 
-        $logs = $this->db->getBuilder()->getAll('log', [], ['date DESC']);
+        $logs = $this->db->getAll('logs', [], 'date DESC');
 
         $this->assign(compact('logs'));
     }
 
     /**
+     * Delete a log
+     *
      * @param int $id
+     * @throws \Deployr\Exception\DbException
      */
     protected function deleteLog(int $id)
     {
         if($id) {
-            $this->db->getBuilder()->delete('log', [
+            $this->db->delete('logs', [
                 'id' => (int) $id
             ]);
         }

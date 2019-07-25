@@ -1,11 +1,12 @@
-# Deployr
+Deployr!
+========
 
 Simply copy files from source to destination using rsync.
 
 
 ## Installation
 
-Pre-requisite : PHP 7, rsync, PDO Sqlite and correct rights on folders.
+Pre-requisite : PHP 7, rsync and correct rights on folders.
 
 ```
 composer install rseon/deployr
@@ -19,6 +20,9 @@ composer install rseon/deployr
 require '../../vendor/autoload.php';
 
 $deployr = new Deployr\Application('mysupersecretkey'); // Change the key !
+$deployr->setOptions([
+    'allowed_ip' => ['127.0.0.1', '::1', 'MY.SUP.ER.IP'],
+]);
 $deployr->run();
 ```
 
@@ -39,16 +43,16 @@ At first run, the database will be created and assets copied into new folder.
 
 | Name | Description | Default |
 |------|-------------|---------|
-| `key` | **required** The secure key used to access to the script from internet | - |
-| `param_key` | The name of the GET parameter | `access_key` |
-| `database` | Absolute path to the database file | `./deployr.db` |
-| `restrict_ip` | Restrict access to these IP | `['127.0.0.1', '::1']` |
+| `access_key_name` | The name of the GET parameter | `access_key` |
+| `allowed_ip` | Allow access for only these IP addresses | `['127.0.0.1', '::1']` |
 
 
 ## Diving deeper
 
 ### Localization
 
-Feel free to add your translations into the `src/Deployr/i18n` folder adding JSON file (named as your lang).
+Feel free to add your translations into the `src/i18n` folder adding JSON file (named as your lang).
+
 The format is simple : `{ "My string" : "My translated string" }`
-Then add it into the file `src/Deployr/i18n/available.json`
+
+Then add it into the file `src/i18n/available.json`

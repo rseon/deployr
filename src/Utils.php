@@ -4,24 +4,25 @@ namespace Deployr;
 
 trait Utils {
 	
-	/**
-     * Link to a page
+
+    /**
+     * Get link to a page
      *
-     * @param string $page
+     * @param string|null $page
      * @param array $params
      * @return string
      */
     public function link(?string $page = '', array $params = []): string
     {
-        $param_key = $this->app->getOption('param_key');
+
+        $param_key = $this->app->getOption('access_key_name');
 
         $query = [
             $param_key => $_GET[$param_key],
         ];
         if($page) {
-            $query[$this->app->getOption('param_page')] = $page;
+            $query[$this->app::PARAM_PAGE] = $page;
         }
-
         if($params) {
             $query = array_merge($query, $params);
         }
@@ -36,13 +37,13 @@ trait Utils {
      */
     public function route(): string
     {
-        return $_GET[$this->app->getOption('param_page')] ?? '';
+        return $_GET[$this->app::PARAM_PAGE] ?? '';
     }
 
     /**
      * Get link to a path.
      *
-     * @param null|string $path
+     * @param string|null $path
      * @return string
      */
     public function path(?string $path = ''): string
@@ -51,7 +52,7 @@ trait Utils {
     }
 
     /**
-     * Alias to translate a string
+     * Shortcut to translate a string
      *
      * @param string $string
      * @param array $params
@@ -73,27 +74,54 @@ trait Utils {
         exit;
     }
 
-
+    /**
+     * Shortcut to get src_path from settings
+     *
+     * @return string
+     */
     public function getSrcPath(): string
     {
-        return $this->db->getSetting('src_path');
+        return $this->db->getSetting('src_path') ?? '';
     }
 
+    /**
+     * Shortcut to get dest_path from settings
+     *
+     * @return string
+     */
     public function getDestPath(): string
     {
-        return $this->db->getSetting('dest_path');
+        return $this->db->getSetting('dest_path') ?? '';
     }
 
+    /**
+     * Shortcut to get exluded files from settings
+     *
+     * @return array
+     */
     public function getExcludes(): array
     {
-        return explode(PHP_EOL, $this->db->getSetting('excludes'));
+        $excludes = $this->db->getSetting('excludes');
+        if($excludes) {
+            return explode(',', $excludes);
+        }
+        return [];
     }
 
-    public function getHash($str) {
+    /**
+     * Get hashed string
+     *
+     * @param $str
+     * @return string
+     */
+    public function getHash(string $str): string
+    {
         return sha1('|deployr!|'.strlen($str).'|'.$str);
     }
 
     /**
+     * Get a file
+     *
      * @param string $filename
      * @return array
      */
@@ -114,7 +142,12 @@ trait Utils {
     }
 
     /**
+     * Check a file
      *
+     * @param $exclusions
+     * @param $filename
+     * @param $file_src
+     * @return string
      */
     protected function checkFile($exclusions, $filename, $file_src): string
     {

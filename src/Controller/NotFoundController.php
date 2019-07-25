@@ -7,6 +7,7 @@ class NotFoundController extends AbstractController
 
     /**
      * @return mixed|void
+     * @throws \Deployr\Exception\ControllerException
      */
     public function init()
     {

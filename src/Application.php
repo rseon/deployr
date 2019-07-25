@@ -2,22 +2,24 @@
 
 namespace Deployr;
 
+use Deployr\Exception\ApplicationException;
 
 class Application
 {
-    const VERSION = '1.0.0';
+    const VERSION = '1.1.0';
+
     const DEFAULT_PAGE = 'index';
+    const PARAM_PAGE = 'p';
+    const DEFAULT_LANG = 'en';
+    const DATABASE_FILE = 'database.db';
 
     /**
      * @var array
      */
     protected $options = [
         'key' => '',
-        'param_key' => 'access_key',
-        'database' => './deployr.db',
-        'default_lang' => 'en',
-        'param_page' => 'p',
-        'restrict_ip' => ['127.0.0.1', '::1'],
+        'access_key_name' => 'access_key',
+        'allowed_ip' => ['127.0.0.1', '::1'],
     ];
 
     protected $base_path;
@@ -48,18 +50,8 @@ class Application
     }
 
     /**
-     * Get options
-     *
-     * @return array
-     */
-    public function getOptions(): array
-    {
-        return $this->options;
-    }
-
-    /**
      * Get one option
-     * 
+     *
      * @param string $key
      * @return mixed
      */
@@ -69,10 +61,37 @@ class Application
     }
 
     /**
+     * Return Application base path
+     *
+     * @return string
+     */
+    public function getBasePath(): string
+    {
+        return $this->base_path;
+    }
+
+    /**
+     * Return project path.
+     *
+     * @return string
+     */
+    public function getRootPath(): string
+    {
+        return realpath(dirname(dirname($this->getBasePath())));
+    }
+
+
+    /**
      * Run application
+     *
+     * @throws ApplicationException
      */
     public function run()
     {
+        if(!$this->options['key']) {
+            throw new ApplicationException('Please provide access key');
+        }
+
         $this->initDb();
         $this->initMessage();
         $this->initSecure();
@@ -86,58 +105,11 @@ class Application
     }
 
     /**
-     * Return Application base path
-     * 
-     * @return string
-     */
-    public function getBasePath(): string
-    {
-        return $this->base_path;
-    }
-
-    /**
-     * Return project path.
-     * 
-     * @return string
-     */
-    public function getRootPath(): string
-    {
-        return realpath(dirname(dirname($this->getBasePath())));
-    }
-
-    /**
      * Init database
      */
     protected function initDb()
     {
-        $create = !file_exists($this->options['database']);
-
-        $this->db = new Db($this->options['database']);
-
-        // First run : create database
-        if($create) {
-            $tables = [
-                'CREATE TABLE settings (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                key TEXT NOT NULL,
-                value TEXT
-            );',
-                'CREATE TABLE log (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                author TEXT,
-                files TEXT,
-                message TEXT,
-                status INTEGER,
-                date TEXT
-            );',
-            ];
-
-            foreach($tables as $t) {
-                $this->db->getBuilder()->getPDO()->query($t);
-            }
-
-            $this->db->log('system', 'Database created successfully', true);
-        }
+        $this->db = Db::connect(static::DATABASE_FILE);
     }
 
     /**
@@ -145,8 +117,8 @@ class Application
      */
     protected function initMessage()
     {
-        $this->message = new Message();
-        $this->message->setLang($this->db->getSetting('lang', $this->options['default_lang']));
+        $this->message = new Message(static::DEFAULT_LANG);
+        $this->message->setLang($this->db->getValue('settings', 'value', ['key' => 'lang']));
     }
 
     /**
@@ -155,15 +127,15 @@ class Application
     protected function initSecure()
     {
         // Check access key
-        if(!isset($_REQUEST[$this->options['param_key']]) || $_REQUEST[$this->options['param_key']] !== $this->options['key']) {
+        if(!isset($_REQUEST[$this->options['access_key_name']]) || $_REQUEST[$this->options['access_key_name']] !== $this->options['key']) {
             header("HTTP/1.1 401 Unauthorized");
             die($this->message->get('Missing or invalid access key.'));
         }
 
         // Check IP access
-        $restrict_ip = $this->options['restrict_ip'];
+        $allowed_ip = $this->options['allowed_ip'];
         $client_ip = Tools::getClientIp();
-        if($restrict_ip && !(in_array($client_ip, $restrict_ip))) {
+        if(!(in_array($client_ip, $allowed_ip))) {
             header("HTTP/1.1 401 Unauthorized");
             die($this->message->get('Unauthorized IP'));
         }
@@ -179,14 +151,14 @@ class Application
         if(!is_dir($assetFolder)) {
             $source = __DIR__.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.'assets';
             $res = Tools::copy($source, $assetFolder);
-            $this->db->log('system', 'Assets copied successfully', true);
+            $this->db->insertLog('system', 'Assets copied successfully', true);
         }
 
-        $page = $_GET[$this->options['param_page']] ?? static::DEFAULT_PAGE;
+        $page = $_GET[static::PARAM_PAGE] ?? static::DEFAULT_PAGE;
         $page = Tools::sanitize($page);
 
         $controllerClass = 'Deployr\\Controller\\'.ucfirst(strtolower($page)).'Controller';
-        if(ucfirst(strtolower($page)) === 'Abstract' || !class_exists($controllerClass)) {
+        if(ucfirst(strtolower($page)) === 'Abstract' || !@class_exists($controllerClass)) {
             $controllerClass = 'Deployr\\Controller\\NotFoundController';
         }
 

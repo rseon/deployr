@@ -67,6 +67,8 @@ class IndexController extends AbstractController
     }
 
     /**
+     * List of modified files
+     *
      * @return array
      */
     protected function getFiles(): array

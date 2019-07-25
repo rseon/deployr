@@ -11,29 +11,29 @@
     </thead>
     <tbody>
     <?php
-    foreach($this->logs as $log) {
+    foreach($this->logs as $row) {
         ?>
         <tr>
-            <td><span class="badge"><?php echo $log['date'] ?></span></td>
-            <td><?php echo $log['author'] ?></td>
+            <td><span class="badge"><?php echo $row['date'] ?></span></td>
+            <td><?php echo $row['author'] ?></td>
             <td>
                 <?php
-                echo $log['message'];
-                if($log['files']) {
-                    $files = explode(',', $log['files']);
+                echo $row['message'];
+                if(isset($row['files'])) {
+                    $files = explode(',', $row['files']);
                     ?>
                     <br />
                     <small>
-                        <a href="javascript:;" onclick="$('#files-<?php echo $log['id'] ?>').toggle()"><?php echo $this->__('Show files') ?></a>
-                        <pre id="files-<?php echo $log['id'] ?>" style="display: none"><?php echo implode(PHP_EOL, explode(',', $log['files'])) ?></pre>
+                        <a href="javascript:;" onclick="$('#files-<?php echo $row['id'] ?>').toggle()"><?php echo $this->__('Show files') ?></a>
+                        <pre id="files-<?php echo $row['id'] ?>" style="display: none"><?php echo implode(PHP_EOL, explode(',', $row['files'])) ?></pre>
                     </small>
                     <?php
                 }
                 ?>
             </td>
-            <td class="text-center"><?php echo $log['status'] == 1 ? '✔' : ($log['status'] == 0 ? '❌' : '') ?></td>
+            <td class="text-center"><?php echo $row['status'] == 1 ? '✔' : ($row['status'] == 0 ? '❌' : '') ?></td>
             <td>
-                <a href="<?php echo $this->link('logs', ['delete' => $log['id']]) ?>"
+                <a href="<?php echo $this->link('logs', ['delete' => $row['id']]) ?>"
                    onclick="return confirm('<?php echo $this->__('Are you sure ?') ?>')"
                    class="btn btn-sm btn-outline-danger"
                 ><?php echo $this->__('Delete') ?></a>

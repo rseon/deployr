@@ -3,15 +3,17 @@
 namespace Deployr\Controller;
 
 use Deployr\Tools;
+use Deployr\Diff;
 
-class DeployController extends AbstractController
+class DiffController extends AbstractController
 {
 
-	protected $src_path;
+    protected $src_path;
     protected $dest_path;
 
     /**
      * @return mixed|void
+     * @throws \Deployr\Exception\ControllerException
      */
     public function init()
     {
@@ -23,23 +25,23 @@ class DeployController extends AbstractController
         if(isset($_POST['files']) && $_POST['files']) {
             $this->handleMultipleFiles();
         }
-        elseif(isset($_POST['file']) && $_POST['file']) {
+        elseif(isset($_GET['file']) && $_GET['file']) {
             $this->handleSingleFile();
         }
         else {
-            $this->assign('error', $this->__('Please select one or more files to publish'));
+            $this->assign('error', $this->__('Please select one or more files to display their differences'));
         }
     }
 
     /**
-     * 
+     * Diff on one file
      */
     protected function handleSingleFile()
     {
-        $filename = Tools::sanitize($_POST['file']);
+        $filename = Tools::sanitize($_GET['file']);
         list($filename, $file_src, $file_dest, $hash) = $this->getFile($filename);
 
-        if(!isset($_POST['hash']) || $_POST['hash'] !== $hash) {
+        if(!isset($_GET['hash']) || $_GET['hash'] !== $hash) {
             $this->assign('error', $this->__('The hash of the file :file is not valid. Abort.', ['file' => $filename]));
             return;
         }
@@ -51,31 +53,31 @@ class DeployController extends AbstractController
             return;
         }
 
-        $rsync_cmd = implode(PHP_EOL, [
-            'rsync -avz --relative '.$this->src_path.DIRECTORY_SEPARATOR.'.'.DIRECTORY_SEPARATOR.$filename.' '.$this->dest_path,
-        ]);
+        if(!is_file($file_dest)) {
+            $exists = false;
+            $content = htmlentities(file_get_contents($file_src));
+        }
+        else {
+            $exists = true;
+            $content = Diff::toTable(Diff::compareFiles($file_dest, $file_src));
+        }
 
-        $output = shell_exec($rsync_cmd);
-        //$output = 'received';
-
-        $success = strpos($output, 'received') !== false;
-
-        $this->db->log(Tools::sanitize($_POST['commit_author']), Tools::sanitize($_POST['commit_message'] ?? ''), $success, [$filename]);
-
-        $this->assign(compact('file_src', 'file_dest', 'hash', 'rsync_cmd', 'output', 'success'));
+        $this->assign(compact('file_src', 'file_dest', 'hash', 'exists', 'content'));
     }
 
     /**
+     * Diff on multiple files
      *
+     * @throws \Deployr\Exception\ControllerException
      */
     protected function handleMultipleFiles()
     {
-        $this->setView('deploy_multiple');
+        $this->setView('diff_multiple');
         $excludes = $this->getExcludes();
         $filenames = $_POST['files'];
-        $cmds = [];
+        $files = [];
         foreach($filenames as $i => $filename) {
-        	$filename = Tools::sanitize($filename);
+            $filename = Tools::sanitize($filename);
             list($filename, $file_src, $file_dest, $hash) = $this->getFile($filename);
 
             if(!isset($_POST['hashes']) || !isset($_POST['hashes'][$i]) || $_POST['hashes'][$i] !== $hash) {
@@ -88,21 +90,20 @@ class DeployController extends AbstractController
                 return;
             }
 
-            if(is_file($file_src)) {
-                $cmds[] = 'rsync -avz --relative '.$this->src_path.DIRECTORY_SEPARATOR.'.'.DIRECTORY_SEPARATOR.$filename.' '.$this->dest_path;
+            if(!is_file($file_dest)) {
+                $exists = false;
+                $content = htmlentities(file_get_contents($file_src));
             }
+            else {
+                $exists = true;
+                $content = Diff::toTable(Diff::compareFiles($file_dest, $file_src));
+            }
+
+            $files[] = compact('filename', 'file_src', 'file_dest', 'hash', 'exists', 'content');
         }
 
-        $rsync_cmd = implode(PHP_EOL, $cmds);
-
-        $output = shell_exec($rsync_cmd);
-        //$output = 'received';
-
-        $success = strpos($output, 'received') !== false;
-
-        $this->db->log(Tools::sanitize($_POST['commit_author']), Tools::sanitize($_POST['commit_message'] ?? ''), $success, $filenames);
-
-        $this->assign(compact('file_src', 'file_dest', 'hash', 'rsync_cmd', 'output', 'success'));
+        $this->assign(compact('files'));
     }
+
 
 }

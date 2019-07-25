@@ -3,7 +3,7 @@
   "description": "Simply copy files from source to destination.",
   "autoload": {
     "psr-4": {
-      "Deployr\\": "src/Deployr/"
+      "Deployr\\": "src/"
     },
     "classmap": [
       "src/"

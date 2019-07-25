@@ -2,29 +2,31 @@
 
 namespace Deployr\Controller;
 
-use Deployr\Application;
-use Deployr\Db;
-use Deployr\Message;
-use Deployr\Utils;
+use Deployr\{
+    Application,
+    Db,
+    Message,
+    Utils,
+};
+
+use Deployr\Exception\ControllerException;
 
 abstract class AbstractController
 {
-
     use Utils;
 
-    protected $options = [
-        'layout' => 'layout',
-        'path' => '/views',
-        'pages_path' => 'pages',
-        'extension' => '.phtml',
-    ];
+    const VIEWS_PATH = '/views';
+    const PAGES_PATH = '/pages';
+    const FILE_EXT = '.phtml';
+    const LAYOUT_FILE = 'layout';
 
-    protected $app;
-    protected $db;
-    protected $message;
-    protected $vars = [];
-    protected $view = '';
-    protected $page_file = '';
+    protected $app; // @var Application
+    protected $db; // @var Db
+    protected $message; // @var Message
+    protected $path; // @var string
+    protected $vars = []; // @var array
+    protected $view = ''; // @var string
+    protected $page_file = ''; // @var string
 
     /**
      * This method must be implemented in controllers.
@@ -45,25 +47,29 @@ abstract class AbstractController
         $this->app = $app;
         $this->db = $db;
         $this->message = $message;
-        $this->options['path'] = $this->app->getBasePath().$this->options['path'];
+        $this->path = $this->app->getBasePath().static::VIEWS_PATH;
     }
 
     /**
      * Set the view
-     * 
+     *
      * @param string $view
+     * @throws ControllerException
      */
     public function setView(string $view)
     {
         $this->view = $view;
-        $this->page_file = $this->options['path'].DIRECTORY_SEPARATOR.$this->options['pages_path'].DIRECTORY_SEPARATOR.$view.$this->options['extension'];
+        $this->page_file = $this->path.static::PAGES_PATH.DIRECTORY_SEPARATOR.$view.static::FILE_EXT;
+        if(!file_exists($this->page_file)) {
+            throw new ControllerException("View file not found : {$this->page_file}");
+        }
     }
 
     /**
      * Assign data to view
      *
-     * @param $key
-     * @param null $value
+     * @param string|array $key
+     * @param mixed $value
      */
     public function assign($key, $value = null)
     {
@@ -98,31 +104,21 @@ abstract class AbstractController
     }
 
     /**
-     * Display these informations when var_dump object
-     *
-     * @return array
-     */
-    /*public function __debugInfo(): array
-    {
-        return $this->vars;
-    }*/
-
-    /**
      * Render the layout
      *
-     * @return string
+     * @return false|string
      */
     public function render()
     {
         // By default in all controllers
         $this->assign([
             'version' => $this->app::VERSION,
-            'settings' => $this->db->getSettings(),
+            'settings' => $this->db->getRow('settings'),
             'flash' => $_SESSION['flash'] ?? '',
         ]);
         unset($_SESSION['flash']);
 
-        $file = $this->options['path'].DIRECTORY_SEPARATOR.$this->options['layout'].$this->options['extension'];
+        $file = $this->path.DIRECTORY_SEPARATOR.static::LAYOUT_FILE.static::FILE_EXT;
         ob_start();
         include $file;
         return ob_get_clean();
@@ -140,6 +136,5 @@ abstract class AbstractController
         include $file;
         return ob_get_clean();
     }
-
     
 }

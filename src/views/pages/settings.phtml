@@ -7,7 +7,7 @@
             <?php
             foreach($this->available_langs as $code => $lang) {
                 ?>
-                <option value="<?php echo $code ?>"<?php echo isset($this->settings['lang']) && $this->settings['lang'] == $code ? ' selected' : '' ?>><?php echo $lang ?></option>
+                <option value="<?php echo $code ?>"<?php echo $this->lang == $code ? ' selected' : '' ?>><?php echo $lang ?></option>
                 <?php
             }
             ?>
@@ -16,19 +16,19 @@
 
     <div class="form-group">
         <label for="src_path"><?php echo $this->__('Source path') ?> *</label>
-        <input type="text" name="src_path" id="src_path" value="<?php echo $this->settings['src_path'] ?? '' ?>" class="form-control" placeholder="/var/www/src" required />
+        <input type="text" name="src_path" id="src_path" value="<?php echo $this->src_path ?? '' ?>" class="form-control" placeholder="/var/www/src" required />
         <small class="form-text text-muted"><?php echo $this->__('Must be on this server') ?></small>
     </div>
 
     <div class="form-group">
         <label for="dest_path"><?php echo $this->__('Destination path') ?> *</label>
-        <input type="text" name="dest_path" id="dest_path" value="<?php echo $this->settings['dest_path'] ?? '' ?>" class="form-control" placeholder="/var/www/dest" required />
+        <input type="text" name="dest_path" id="dest_path" value="<?php echo $this->dest_path ?? '' ?>" class="form-control" placeholder="/var/www/dest" required />
         <small class="form-text text-muted"><?php echo $this->__('Must be on this server') ?></small>
     </div>
 
     <div class="form-group">
         <label for="excludes"><?php echo $this->__('Exclude these files') ?></label>
-        <textarea name="excludes" id="excludes" class="form-control"><?php echo $this->settings['excludes'] ?? '' ?></textarea>
+        <textarea name="excludes" id="excludes" class="form-control"><?php echo implode(PHP_EOL, $this->excludes) ?? '' ?></textarea>
         <small class="form-text text-muted"><?php echo $this->__('One file by line') ?></small>
     </div>
 

@@ -67,6 +67,8 @@
 <main class="flex-shrink-0">
     <div class="container mb-5">
         <?php
+
+        // Display flash message
         if($this->flash) {
             ?>
             <div class="alert alert-primary alert-dismissible fade show">
@@ -78,6 +80,7 @@
             <?php
         }
 
+        // Display content in the layout
         echo $this->getContent();
 
         ?>
@@ -85,7 +88,7 @@
 </main>
 <footer class="bg-light mt-auto py-3">
     <div class="container">
-        <span class="text-muted">Made with ❤ by <a href="https://github.com/rseon" target="_blank">@rseon</a> - <a href="https://github.com/rseon/deployr" target="_blank">Sources</a></span>
+        <span class="text-muted">Deployr! <?php echo $this->version ?> - Made with ❤ by <a href="https://github.com/rseon" target="_blank">@rseon</a> - <a href="https://github.com/rseon/deployr" target="_blank">Sources</a></span>
     </div>
 </footer>
 
