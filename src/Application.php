@@ -6,7 +6,7 @@ use Deployr\Exception\ApplicationException;
 
 class Application
 {
-    const VERSION = '1.1.0';
+    const VERSION = '1.1.1';
 
     const DEFAULT_PAGE = 'index';
     const PARAM_PAGE = 'p';
