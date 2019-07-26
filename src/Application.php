@@ -118,7 +118,7 @@ class Application
     protected function initMessage()
     {
         $this->message = new Message(static::DEFAULT_LANG);
-        $this->message->setLang($this->db->getValue('settings', 'value', ['key' => 'lang']));
+        $this->message->setLang($this->db->getSetting('lang'));
     }
 
     /**
