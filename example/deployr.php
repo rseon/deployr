@@ -1,5 +1,8 @@
 <?php
-require '../vendor/autoload.php';
+require '../vendor/autoload.php'; // If installed with composer
+//require '../src/autoload.php'; // If installed without composer
+
+// Access to this file like this : http://localhost/example/deployr.php?access_key=72e42c81-3e0d-4fb0-a21c-4a0bf83d36c4
 
 try {
 

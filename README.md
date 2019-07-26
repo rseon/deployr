@@ -3,21 +3,13 @@ Deployr!
 
 Simply copy files from source to destination using rsync.
 
-
-## Installation
-
-Pre-requisite : PHP 7, rsync and correct rights on folders.
-
-```
-composer install rseon/deployr
-```
-
 ## Simple usage
 * Create (and protect) a folder accessible from Internet (example : `_secure23x45`).
 * Create a file (example : `deploy.php`) and add this content :
 
 ```php
-require '../../vendor/autoload.php';
+require '../vendor/autoload.php'; // If installed with composer
+// require '../deployr/src/autoload.php'; // If installed without composer
 
 $deployr = new Deployr\Application('mysupersecretkey'); // Change the key !
 $deployr->setOptions([
@@ -42,6 +34,22 @@ __Don't use this tool for first deployment !__
 If you add folders or files in excluded paths, like storage path, it will not be created even thought it is necessary.
 
 
+## Installation
+
+Pre-requisite : PHP 7, rsync and correct rights on folders.
+
+### With composer
+```
+composer install rseon/deployr
+```
+
+Add this line at start of your deployer file : `require '../vendor/autoload.php';`
+
+### Without composer
+* Download this repository as ZIP
+* Upload it on your server 
+* Dezip file at root of your project
+* Add this line at start of your deployer file : `require '../deployr/src/autoload.php';`
 
 
 ## Methods
