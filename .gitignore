@@ -2,3 +2,5 @@
 /vendor/
 *.db
 example/assets/
+composer.lock
+tests/.phpunit.result.cache
