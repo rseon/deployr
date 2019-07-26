@@ -216,7 +216,7 @@ class Db
         }
 
         $this->writeFile();
-        return count($this->data[$table]) - 1;
+        return count($this->data[$table]);
     }
 
     /**
