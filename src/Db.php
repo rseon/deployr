@@ -232,7 +232,6 @@ class Db
         $nb_deletes = 0;
         if(isset($this->data[$table])) {
             foreach($this->data[$table] as $index => $line) {
-
                 foreach($conditions as $key => $value) {
                     if(is_array($value)) {
                         foreach($value as $val) {
@@ -255,7 +254,6 @@ class Db
                         }
                     }
                 }
-
             }
         }
 

@@ -34,7 +34,7 @@ class Application
      */
     public function __construct(string $key)
     {
-        session_start();
+        @session_start();
         $this->options['key'] = $key;
         $this->base_path = __DIR__;
     }
@@ -123,21 +123,23 @@ class Application
 
     /**
      * Init securizations
+     *
+     * @throws ApplicationException
      */
     protected function initSecure()
     {
         // Check access key
         if(!isset($_REQUEST[$this->options['access_key_name']]) || $_REQUEST[$this->options['access_key_name']] !== $this->options['key']) {
-            header("HTTP/1.1 401 Unauthorized");
-            die($this->message->get('Missing or invalid access key.'));
+            @header("HTTP/1.1 401 Unauthorized");
+            throw new ApplicationException($this->message->get('Missing or invalid access key.'));
         }
 
         // Check IP access
         $allowed_ip = $this->options['allowed_ip'];
         $client_ip = Tools::getClientIp();
         if(!(in_array($client_ip, $allowed_ip))) {
-            header("HTTP/1.1 401 Unauthorized");
-            die($this->message->get('Unauthorized IP'));
+            @header("HTTP/1.1 401 Unauthorized");
+            throw new ApplicationException($this->message->get('Unauthorized IP'));
         }
     }
 

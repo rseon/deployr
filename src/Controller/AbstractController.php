@@ -107,6 +107,7 @@ abstract class AbstractController
      * Render the layout
      *
      * @return false|string
+     * @throws ControllerException
      */
     public function render()
     {
@@ -119,6 +120,10 @@ abstract class AbstractController
         unset($_SESSION['flash']);
 
         $file = $this->path.DIRECTORY_SEPARATOR.static::LAYOUT_FILE.static::FILE_EXT;
+        if(!$file) {
+            throw new ControllerException('Please set view first');
+        }
+
         ob_start();
         include $file;
         return ob_get_clean();
@@ -128,10 +133,15 @@ abstract class AbstractController
      * Get content of the page
      *
      * @return string
+     * @throws ControllerException
      */
     public function getContent(): string
     {
         $file = $this->page_file;
+        if(!$file) {
+            throw new ControllerException('Please set view first');
+        }
+
         ob_start();
         include $file;
         return ob_get_clean();
